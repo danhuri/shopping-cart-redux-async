@@ -23,7 +23,7 @@ const cartSlice = createSlice({
                 });
             } else {
                 existingItem.quantity++;
-                existingItem.totalPrice = existingItem.totalPrice + newItem.price;
+                existingItem.totalPrice += newItem.price;
             }
         },
         removeItemToCart(state,action) {
@@ -34,12 +34,18 @@ const cartSlice = createSlice({
                 state.items = state.items.filter(item => item.id !== id);//when the condition its true (item.id !== id) it keeps the item in the array, and when condition is false it filters the item out
             } else {
                 existingItem.quantity--;
-                existingItem.totalPrice = existingItem.totalPrice - existingItem.price;
+                existingItem.totalPrice -= existingItem.price;
             }
 
         },
     },
 });
+
+// const sendCartData = (cartData) => {
+//     return (dispatch) => {
+//         dispatch();
+//     };
+// };
 
 export const cartActions = cartSlice.actions;
 
