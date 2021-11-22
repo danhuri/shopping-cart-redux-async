@@ -1,4 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { uiActions } from './ui-slice';
+import { doc, setDoc } from "firebase/firestore/lite";
+import { db } from "../../services/firebase-config";
 
 const cartSlice = createSlice({
     name: "cart",
@@ -41,11 +44,44 @@ const cartSlice = createSlice({
     },
 });
 
-// const sendCartData = (cartData) => {
-//     return (dispatch) => {
-//         dispatch();
-//     };
-// };
+export const sendCartData = (cart) => {
+    return async (dispatch) => {
+        const sendCartToFireStore = async () => {    
+            dispatch(
+                uiActions.showNotification({
+                    status: "pending",
+                    title: "Sending",
+                    message: "Sending cart data",
+                })
+            );
+            try {
+                await setDoc(doc(db, "cart", "cart1"), {
+                    items: cart.items,
+                    totalQuantity: cart.totalQuantity,
+                });
+            } catch (err) {
+                throw new Error('Sending cart data failed!');
+            } 
+            dispatch(
+                uiActions.showNotification({
+                    status: "success",
+                    title: "Success!",
+                    message: "Cart data stored successfully",
+                })
+            ); 
+        };        
+        
+        sendCartToFireStore().catch((error) => {
+            dispatch(
+                uiActions.showNotification({
+                    status: "error",
+                    title: "Error!",
+                    message: "Sending cart data failed!",
+                })
+            );    
+        });
+    };
+};
 
 export const cartActions = cartSlice.actions;
 
